@@ -1,25 +1,27 @@
-<h2><a href="https://leetcode.com/problems/intersection-of-two-arrays">Intersection of Two Arrays</a></h2> <img src='https://img.shields.io/badge/Difficulty-Easy-brightgreen' alt='Difficulty: Easy' /><hr><p>Given two integer arrays <code>nums1</code> and <code>nums2</code>, return <em>an array of their <span data-keyword="array-intersection">intersection</span></em>. Each element in the result must be <strong>unique</strong> and you may return the result in <strong>any order</strong>.</p>
+# Intersection of Two Arrays
 
-<p>&nbsp;</p>
-<p><strong class="example">Example 1:</strong></p>
+## Problem
 
-<pre>
-<strong>Input:</strong> nums1 = [1,2,2,1], nums2 = [2,2]
-<strong>Output:</strong> [2]
-</pre>
+Given two integer arrays `nums1` and `nums2`, return an array containing their intersection.
 
-<p><strong class="example">Example 2:</strong></p>
+Each element in the result must be unique.
 
-<pre>
-<strong>Input:</strong> nums1 = [4,9,5], nums2 = [9,4,9,8,4]
-<strong>Output:</strong> [9,4]
-<strong>Explanation:</strong> [4,9] is also accepted.
-</pre>
+## Approach
 
-<p>&nbsp;</p>
-<p><strong>Constraints:</strong></p>
+I used two objects to solve the problem:
 
-<ul>
-	<li><code>1 &lt;= nums1.length, nums2.length &lt;= 1000</code></li>
-	<li><code>0 &lt;= nums1[i], nums2[i] &lt;= 1000</code></li>
-</ul>
+1. Create `freqNums1` to store the elements from `nums1`.
+2. Iterate through `nums1` and store each element as a key in `freqNums1`.
+3. Iterate through `nums2`.
+4. If an element from `nums2` exists in `freqNums1`, store it in `freqNums2`.
+5. Since object keys are unique, duplicate elements are automatically avoided.
+6. Return the keys of `freqNums2` as numbers.
+
+## Complexity
+
+- **Time Complexity:** `O(n + m)`
+- **Space Complexity:** `O(n + m)`
+
+Where:
+- `n` = length of `nums1`
+- `m` = length of `nums2`
