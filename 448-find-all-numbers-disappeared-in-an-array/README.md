@@ -1,21 +1,87 @@
-<h2><a href="https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array">Find All Numbers Disappeared in an Array</a></h2> <img src='https://img.shields.io/badge/Difficulty-Easy-brightgreen' alt='Difficulty: Easy' /><hr><p>Given an array <code>nums</code> of <code>n</code> integers where <code>nums[i]</code> is in the range <code>[1, n]</code>, return <em>an array of all the integers in the range</em> <code>[1, n]</code> <em>that do not appear in</em> <code>nums</code>.</p>
+# Find All Numbers Disappeared in an Array
 
-<p>&nbsp;</p>
-<p><strong class="example">Example 1:</strong></p>
-<pre><strong>Input:</strong> nums = [4,3,2,7,8,2,3,1]
-<strong>Output:</strong> [5,6]
-</pre><p><strong class="example">Example 2:</strong></p>
-<pre><strong>Input:</strong> nums = [1,1]
-<strong>Output:</strong> [2]
-</pre>
-<p>&nbsp;</p>
-<p><strong>Constraints:</strong></p>
+## Problem
+Given an array `nums` of `n` integers where `nums[i]` is in the range `[1, n]`,
+return all the integers in the range `[1, n]` that do not appear in `nums`.
 
-<ul>
-	<li><code>n == nums.length</code></li>
-	<li><code>1 &lt;= n &lt;= 10<sup>5</sup></code></li>
-	<li><code>1 &lt;= nums[i] &lt;= n</code></li>
-</ul>
+## Concept: Array as a Hash Map (In-Place Index Marking)
 
-<p>&nbsp;</p>
-<p><strong>Follow up:</strong> Could you do it without extra space and in <code>O(n)</code> runtime? You may assume the returned list does not count as extra space.</p>
+Instead of using extra space (a `Set` or `Map`) to track which numbers we've
+seen, we use **the array itself** as the hash map.
+
+The key insight: since every value is guaranteed to be in `[1, n]`, each value
+has a natural "home index" — `value - 1`. We can use that relationship to turn
+positions in the array into presence flags, using the **sign of the number**
+as a marker (negative = "this value exists somewhere in the array").
+
+## How it works
+
+**1. Marking pass**
+```js
+let x = Math.abs(nums[i]);      // original value, even if this slot was already negated
+let index = x - 1;              // find the "home" index for this value
+if (nums[index] > 0) {
+    nums[index] *= -1;          // flip the sign at that index to mark it "seen"
+}
+```
+- `Math.abs(nums[i])` is used because a value may have already been negated by
+  a previous iteration — we need the *original* magnitude to compute its
+  correct home index.
+- The `if (nums[index] > 0)` check guards against double-flipping when a value
+  appears more than once (duplicates) — once a slot is negative, we leave it
+  alone.
+
+**2. Reading pass**
+```js
+if (nums[i] > 0) {
+    result.push(i + 1);
+}
+```
+If a position was **never marked negative**, it means no value in the array
+ever pointed to it — so the number `i + 1` never appeared, i.e. it "disappeared."
+
+## Why this approach
+
+| Approach              | Time  | Space |
+|------------------------|-------|-------|
+| Set / Map lookup        | O(n)  | O(n)  |
+| Sort first               | O(n log n) | O(1) / O(log n) |
+| **In-place sign marking** | **O(n)** | **O(1)** (excluding output) |
+
+Because the values are bounded to `[1, n]`, we can exploit the array's own
+indices as a hash table with O(1) extra space — no auxiliary data structure
+needed. The tradeoff is that this **mutates the input array**.
+
+## Mental model
+> **index = a value's home address, sign = a "visited" flag.**
+
+Every number "checks into" its own house (`value - 1`) and turns off the
+porch light (negates it). At the end, any house whose light is still on
+belongs to a number that never showed up.
+
+## Solution
+
+```javascript
+/**
+ * @param {number[]} nums
+ * @return {number[]}
+ */
+var findDisappearedNumbers = function(nums) {
+    for (let i = 0; i < nums.length; i++) {
+        let x = Math.abs(nums[i]);
+        let index = x - 1;
+        if (nums[index] > 0) {
+            nums[index] *= -1;
+        }
+    }
+
+    let result = [];
+    for (let i = 0; i < nums.length; i++) {
+        if (nums[i] > 0) {
+            result.push(i + 1);
+        }
+    }
+
+    return result;
+};
+```
