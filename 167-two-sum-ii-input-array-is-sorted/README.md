@@ -1,43 +1,444 @@
-<h2><a href="https://leetcode.com/problems/two-sum-ii-input-array-is-sorted">Two Sum II - Input Array Is Sorted</a></h2> <img src='https://img.shields.io/badge/Difficulty-Medium-orange' alt='Difficulty: Medium' /><hr><p>Given a <strong>1-indexed</strong> array of integers <code>numbers</code> that is already <strong><em>sorted in non-decreasing order</em></strong>, find two numbers such that they add up to a specific <code>target</code> number. Let these two numbers be <code>numbers[index<sub>1</sub>]</code> and <code>numbers[index<sub>2</sub>]</code> where <code>1 &lt;= index<sub>1</sub> &lt; index<sub>2</sub> &lt;= numbers.length</code>.</p>
+# Two Sum II – Input Array Is Sorted
 
-<p>Return<em> the indices of the two numbers&nbsp;</em><code>index<sub>1</sub></code><em> and </em><code>index<sub>2</sub></code><em>, <strong>each incremented by one,</strong> as an integer array </em><code>[index<sub>1</sub>, index<sub>2</sub>]</code><em> of length 2.</em></p>
+## Problem
 
-<p>The tests are generated such that there is <strong>exactly one solution</strong>. You <strong>may not</strong> use the same element twice.</p>
+Given a **1-indexed** array of integers `numbers` that is already sorted in **non-decreasing order**, find two numbers such that:
 
-<p>Your solution must use only constant extra space.</p>
+```text
+numbers[i] + numbers[j] = target
+```
 
-<p>&nbsp;</p>
-<p><strong class="example">Example 1:</strong></p>
+Return the indices of the two numbers.
 
-<pre>
-<strong>Input:</strong> numbers = [<u>2</u>,<u>7</u>,11,15], target = 9
-<strong>Output:</strong> [1,2]
-<strong>Explanation:</strong> The sum of 2 and 7 is 9. Therefore, index<sub>1</sub> = 1, index<sub>2</sub> = 2. We return [1, 2].
-</pre>
+The array uses **1-based indexing**, so the answer should return:
 
-<p><strong class="example">Example 2:</strong></p>
+```text
+[i + 1, j + 1]
+```
 
-<pre>
-<strong>Input:</strong> numbers = [<u>2</u>,3,<u>4</u>], target = 6
-<strong>Output:</strong> [1,3]
-<strong>Explanation:</strong> The sum of 2 and 4 is 6. Therefore index<sub>1</sub> = 1, index<sub>2</sub> = 3. We return [1, 3].
-</pre>
+---
 
-<p><strong class="example">Example 3:</strong></p>
+## Example
 
-<pre>
-<strong>Input:</strong> numbers = [<u>-1</u>,<u>0</u>], target = -1
-<strong>Output:</strong> [1,2]
-<strong>Explanation:</strong> The sum of -1 and 0 is -1. Therefore index<sub>1</sub> = 1, index<sub>2</sub> = 2. We return [1, 2].
-</pre>
+```text
+numbers = [2, 7, 11, 15]
+target = 9
+```
 
-<p>&nbsp;</p>
-<p><strong>Constraints:</strong></p>
+We need to find two numbers whose sum is `9`.
 
-<ul>
-	<li><code>2 &lt;= numbers.length &lt;= 3 * 10<sup>4</sup></code></li>
-	<li><code>-1000 &lt;= numbers[i] &lt;= 1000</code></li>
-	<li><code>numbers</code> is sorted in <strong>non-decreasing order</strong>.</li>
-	<li><code>-1000 &lt;= target &lt;= 1000</code></li>
-	<li>The tests are generated such that there is <strong>exactly one solution</strong>.</li>
-</ul>
+```text
+2 + 7 = 9
+```
+
+So the answer is:
+
+```text
+[1, 2]
+```
+
+---
+
+# Approach 1: Brute Force
+
+First, I think about the simplest solution without worrying about optimization.
+
+We can check **every possible pair** in the array.
+
+For every `i`, check all elements after it using another loop.
+
+### Code
+
+```js
+var twoSum = function(numbers, target) {
+    for (let i = 0; i < numbers.length; i++) {
+        for (let j = i + 1; j < numbers.length; j++) {
+
+            if (numbers[i] + numbers[j] === target) {
+                return [i + 1, j + 1];
+            }
+
+        }
+    }
+};
+```
+
+### How it works
+
+For:
+
+```text
+[2, 7, 11, 15]
+```
+
+We check:
+
+```text
+2 + 7
+2 + 11
+2 + 15
+7 + 11
+7 + 15
+11 + 15
+```
+
+When the sum equals the target, we return the indices.
+
+### Complexity
+
+```text
+Time:  O(n²)
+Space: O(1)
+```
+
+---
+
+# Approach 2: Two Pointers
+
+Now we notice an important property:
+
+> The array is already sorted.
+
+Because the array is sorted, we don't need to check every possible pair.
+
+We can use **two pointers**:
+
+```text
+i → starts from the beginning
+j → starts from the end
+```
+
+### Initial setup
+
+```js
+let i = 0;
+let j = numbers.length - 1;
+```
+
+For:
+
+```text
+numbers = [2, 7, 11, 15]
+```
+
+We have:
+
+```text
+ i              j
+ ↓              ↓
+[2, 7, 11, 15]
+```
+
+---
+
+## Step 1: Calculate the sum
+
+```js
+let sum = numbers[i] + numbers[j];
+```
+
+Initially:
+
+```text
+2 + 15 = 17
+```
+
+Our target is:
+
+```text
+9
+```
+
+Since:
+
+```text
+17 > 9
+```
+
+the sum is too large.
+
+Because the array is sorted, we need a smaller number.
+
+So we move the right pointer to the left:
+
+```js
+j--;
+```
+
+Now:
+
+```text
+ i          j
+ ↓          ↓
+[2, 7, 11, 15]
+```
+
+---
+
+## Step 2: Calculate again
+
+Now:
+
+```text
+2 + 11 = 13
+```
+
+Again:
+
+```text
+13 > 9
+```
+
+The sum is still too large.
+
+So:
+
+```js
+j--;
+```
+
+Now:
+
+```text
+ i   j
+ ↓   ↓
+[2, 7, 11, 15]
+```
+
+---
+
+## Step 3: Calculate again
+
+Now:
+
+```text
+2 + 7 = 9
+```
+
+And:
+
+```text
+9 === 9
+```
+
+We found the answer.
+
+So we return:
+
+```js
+return [i + 1, j + 1];
+```
+
+The result is:
+
+```text
+[1, 2]
+```
+
+---
+
+# Why Do We Move the Pointers?
+
+This is the most important part of the solution.
+
+### If the sum is greater than the target
+
+```text
+sum > target
+```
+
+We need to **decrease the sum**.
+
+Since the array is sorted, move the right pointer left:
+
+```js
+j--;
+```
+
+Example:
+
+```text
+2 + 15 = 17
+```
+
+Move `j`:
+
+```text
+2 + 11 = 13
+```
+
+The sum became smaller.
+
+---
+
+### If the sum is smaller than the target
+
+```text
+sum < target
+```
+
+We need to **increase the sum**.
+
+Since the array is sorted, move the left pointer right:
+
+```js
+i++;
+```
+
+Example:
+
+```text
+2 + 7 = 9
+```
+
+If the target were `12` instead:
+
+```text
+2 + 7 = 9
+```
+
+The sum is too small, so we move `i`:
+
+```text
+7 + 7...
+```
+
+The left value becomes larger, which increases the sum.
+
+---
+
+# Final Optimized Code
+
+```js
+/**
+ * @param {number[]} numbers
+ * @param {number} target
+ * @return {number[]}
+ */
+var twoSum = function(numbers, target) {
+    let i = 0;
+    let j = numbers.length - 1;
+
+    while (i < j) {
+
+        let sum = numbers[i] + numbers[j];
+
+        if (sum === target) {
+            return [i + 1, j + 1];
+        }
+
+        if (sum > target) {
+            j--;
+        } else {
+            i++;
+        }
+    }
+};
+```
+
+---
+
+# The Main Logic to Remember
+
+```text
+             Calculate sum
+                  ↓
+        numbers[i] + numbers[j]
+                  ↓
+        ┌─────────┼─────────┐
+        ↓         ↓         ↓
+      sum <     sum ==     sum >
+      target    target     target
+        ↓         ↓         ↓
+       i++      return      j--
+```
+
+In simple words:
+
+```text
+sum == target
+    → Found the answer → stop
+
+sum > target
+    → Sum is too big → decrease j
+
+sum < target
+    → Sum is too small → increase i
+```
+
+---
+
+# Why Two Pointers Is Better
+
+### Brute Force
+
+```text
+Two loops
+    ↓
+Check every pair
+    ↓
+O(n²)
+```
+
+### Two Pointers
+
+```text
+One pointer from left
+One pointer from right
+        ↓
+Move one pointer each time
+        ↓
+O(n)
+```
+
+So the optimization is:
+
+```text
+Brute Force → O(n²)
+
+        ↓
+Use the fact that the array is sorted
+
+        ↓
+
+Two Pointers → O(n)
+```
+
+### Complexity
+
+```text
+Time Complexity:  O(n)
+Space Complexity: O(1)
+```
+
+---
+
+# My Problem-Solving Pattern
+
+When solving DSA problems, my first thought is:
+
+```text
+1. Understand the problem
+2. Think about the brute-force solution
+3. Check the constraints
+4. Look for a useful property
+5. Optimize the brute-force approach
+```
+
+For this problem:
+
+```text
+Brute Force
+    ↓
+Check every pair
+    ↓
+Notice the array is sorted
+    ↓
+Use two pointers
+    ↓
+O(n²) → O(n)
+```
+
+The key observation here is:
+
+> **Because the array is sorted, we can decide which pointer to move based on whether the current sum is too small or too large.**
