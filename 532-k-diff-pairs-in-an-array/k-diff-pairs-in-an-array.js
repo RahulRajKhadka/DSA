@@ -3,36 +3,31 @@
  * @param {number} k
  * @return {number}
  */
-var findPairs = function(nums, k) {
-    if(k<0 || nums.legth<2)return 0;
-    nums.sort((a,b)=>a-b);
-
-    let count=0;
-    let left=0;
-    let right=0;
-    while(right<nums.length){
-        if(left==right){
-            right++;
-            continue;
+var findPairs = function (nums, k) {
+    if (k < 0) return 0;
+    const frequencyMap = new Map();
+    let pairCount = 0;
+    for (const number of nums) {
+        frequencyMap.set(
+            number,
+         (frequencyMap.get(number) || 0) + 1);
+    }
+    
+    for (const [number, frequency] of frequencyMap) {
+        if (k === 0) {
+            if (frequency >= 2) {
+                pairCount++;
+            }
         }
-        const diff=nums[right]-nums[left];
-        if(diff==k){
-            count++;
-            left++;
-            right++;
-              while (left < nums.length && nums[left] === nums[left - 1]) {
-                left++;
+        else {
+            if (frequencyMap.has(number + k)) {
+                pairCount++;
             }
-             while (right < nums.length && nums[right] === nums[right - 1]) {
-                right++;
-            }
-
-        }else if(diff<k){
-            right++;
-        }else {
-            left++;
         }
     }
 
-    return count;
+    return pairCount;
+
+
+
 };
