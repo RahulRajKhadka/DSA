@@ -1,46 +1,122 @@
-<h2><a href="https://leetcode.com/problems/k-diff-pairs-in-an-array">K-diff Pairs in an Array</a></h2> <img src='https://img.shields.io/badge/Difficulty-Medium-orange' alt='Difficulty: Medium' /><hr><p>Given an array of integers <code>nums</code> and an integer <code>k</code>, return <em>the number of <b>unique</b> k-diff pairs in the array</em>.</p>
+## K-diff Pairs in an Array
 
-<p>A <strong>k-diff</strong> pair is an integer pair <code>(nums[i], nums[j])</code>, where the following are true:</p>
+### Problem
 
-<ul>
-	<li><code>0 &lt;= i, j &lt; nums.length</code></li>
-	<li><code>i != j</code></li>
-	<li><code>|nums[i] - nums[j]| == k</code></li>
-</ul>
+Given an array `nums` and an integer `k`, find the number of **unique pairs** whose absolute difference is `k`.
 
-<p><strong>Notice</strong> that <code>|val|</code> denotes the absolute value of <code>val</code>.</p>
+### Constraints
 
-<p>&nbsp;</p>
-<p><strong class="example">Example 1:</strong></p>
+* `1 <= nums.length <= 10^4`
+* `-10^7 <= nums[i] <= 10^7`
+* `0 <= k <= 10^7`
 
-<pre>
-<strong>Input:</strong> nums = [3,1,4,1,5], k = 2
-<strong>Output:</strong> 2
-<strong>Explanation:</strong> There are two 2-diff pairs in the array, (1, 3) and (3, 5).
-Although we have two 1s in the input, we should only return the number of <strong>unique</strong> pairs.
-</pre>
+### My Approach — HashMap
 
-<p><strong class="example">Example 2:</strong></p>
+First, create a frequency map:
 
-<pre>
-<strong>Input:</strong> nums = [1,2,3,4,5], k = 1
-<strong>Output:</strong> 4
-<strong>Explanation:</strong> There are four 1-diff pairs in the array, (1, 2), (2, 3), (3, 4) and (4, 5).
-</pre>
+```text
+number → frequency
+```
 
-<p><strong class="example">Example 3:</strong></p>
+Then loop through the Map.
 
-<pre>
-<strong>Input:</strong> nums = [1,3,1,5,4], k = 0
-<strong>Output:</strong> 1
-<strong>Explanation:</strong> There is one 0-diff pair in the array, (1, 1).
-</pre>
+#### Case 1: `k === 0`
 
-<p>&nbsp;</p>
-<p><strong>Constraints:</strong></p>
+We need two occurrences of the **same number**.
 
-<ul>
-	<li><code>1 &lt;= nums.length &lt;= 10<sup>4</sup></code></li>
-	<li><code>-10<sup>7</sup> &lt;= nums[i] &lt;= 10<sup>7</sup></code></li>
-	<li><code>0 &lt;= k &lt;= 10<sup>7</sup></code></li>
-</ul>
+```text
+frequency >= 2
+→ pairCount++
+```
+
+Example:
+
+```text
+1 → 2
+```
+
+This gives the pair:
+
+```text
+(1, 1)
+```
+
+#### Case 2: `k > 0`
+
+The condition is:
+
+```text
+|ai - aj| = k
+```
+
+For positive `k`:
+
+```text
+ai - aj = k
+
+ai = aj + k
+```
+
+So while looping over `aj`, check whether:
+
+```text
+aj + k
+```
+
+exists in the Map.
+
+```js
+frequencyMap.has(number + k)
+```
+
+If it exists:
+
+```text
+→ valid pair
+→ pairCount++
+```
+
+### Why `number + k`?
+
+Example:
+
+```text
+number = 1
+k = 2
+
+1 + 2 = 3
+```
+
+If `3` exists:
+
+```text
+ai = 3
+aj = 1
+
+3 - 1 = 2
+```
+
+So `(1, 3)` is a valid pair.
+
+### Important Points
+
+```text
+Map key   → number
+Map value → frequency
+
+k = 0
+→ frequency >= 2
+
+k > 0
+→ check number + k
+
+valid pair
+→ pairCount++
+```
+
+### Complexity
+
+```text
+Time:  O(n) average
+Space: O(n)
+```
